@@ -13,13 +13,14 @@ DV = 110.0
 ALL_L_VALUES = [float(x) for x in range(10)]
 
 damages = []
+num_perms = len(BASE_DAMAGE_VALUES)
 
 # calculate damages
-for attack_indices in itertools.permutations(range(3)):
+for attack_indices in itertools.permutations(range(num_perms)):
     sub_damages = []
 
     # loop over permutations of L's
-    for L_VALUES in itertools.product(ALL_L_VALUES, repeat=3):
+    for L_VALUES in itertools.product(ALL_L_VALUES, repeat=num_perms):
         # initialize variables
         damage = 0
         HPd = 100.0
@@ -50,10 +51,12 @@ for attack_indices in itertools.permutations(range(3)):
     damages.append({attack_indices: sub_damages})
 
 # print kill probabilities
-print("Kill Probabilities:")
-for damage_index in range(6):
-    perm = list(damages[damage_index].keys())[0]
-    ds = list(damages[damage_index].values())[0]
-    kill_prob = sum(i >= 100 for i in ds) / 1000
-    
-    print(perm, ": ", kill_prob)
+num_damages = len(damages)
+
+print("Kill Probabilites (%):")
+for d in damages:
+    perm = list(d.keys())[0]
+    ds = list(d.values())[0]
+    kill_prob = sum(i >= 100 for i in ds) / 10.0 # /1000*100
+
+    print(perm, ': ', kill_prob, '%')
