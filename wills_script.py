@@ -14,30 +14,31 @@ ALL_L_VALUES = [float(x) for x in range(10)]
 
 ### CALCULATE DAMAGES ##################################################################
 damages = []
-num_perms = len(BASE_DAMAGE_VALUES)
+num_attacks = len(BASE_DAMAGE_VALUES)
 
 # iterate over all attack permutations
-for attack_indices in itertools.permutations(range(num_perms)):
+for attack_indices in itertools.permutations(range(num_attacks)):
     sub_damages = []
 
     # iterate over all permutations of L's
-    for L_VALUES in itertools.product(ALL_L_VALUES, repeat=num_perms):
+    for L_VALUES in itertools.product(ALL_L_VALUES, repeat=num_attacks):
         # initialize variables
         damage = 0
         HPd = 100.0
 
         # simulate attacks
-        for attack_index, L in zip(attack_indices, L_VALUES):
+        for ai, L in zip(attack_indices, L_VALUES):
             # pre-calculate
-            BD = BASE_DAMAGE_VALUES[attack_index]
-            A = A_VALUES[attack_index]
-            HPA = HPA_VALUES[attack_index]
+            BD = BASE_DAMAGE_VALUES[ai]
+            A = A_VALUES[ai]
+            HPA = HPA_VALUES[ai]
             HPd_visible = math.ceil(HPd/10.0)
             
             # calculate
             damage_float = (BD*A/100.0+L) * HPA/10.0 * (200.0-(DV+DTR*HPd_visible))/100.0
 
             # round down if the decimal is between 0 and 0.95
+            # round down if the decimal is 0.95
             # round up if the decimal is between 0.95 and 1
             damage_part = math.ceil(damage_float - 0.95)
 
