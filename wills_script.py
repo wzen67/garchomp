@@ -2,19 +2,20 @@
 import math
 import itertools
 
-# Initialize variables
-BASE_DAMAGE_VALUES = [55.0, 55.0, 5.0]
+# initialize variables
+B_VALUES = [55.0, 55.0, 5.0]
 A_VALUES = [120.0, 120.0, 120.0]
 HPA_VALUES = [10.0, 10.0, 9.0]
 DTR = 3.0
 DV = 110.0  
 # wait to initialize Hpd inside the calculation loop
 
+# constant
 ALL_L_VALUES = [float(x) for x in range(10)]
 
 ### CALCULATE DAMAGES ##################################################################
 damages = []
-num_attacks = len(BASE_DAMAGE_VALUES)
+num_attacks = len(B_VALUES)
 
 # iterate over all attack permutations
 for attack_indices in itertools.permutations(range(num_attacks)):
@@ -29,13 +30,13 @@ for attack_indices in itertools.permutations(range(num_attacks)):
         # simulate attacks
         for ai, L in zip(attack_indices, L_VALUES):
             # pre-calculate
-            BD = BASE_DAMAGE_VALUES[ai]
+            B = B_VALUES[ai]
             A = A_VALUES[ai]
             HPA = HPA_VALUES[ai]
             HPd_visible = math.ceil(HPd/10.0)
             
             # calculate
-            damage_float = (BD*A/100.0+L) * HPA/10.0 * (200.0-(DV+DTR*HPd_visible))/100.0
+            damage_float = (B*A/100.0+L) * HPA/10.0 * (200.0-(DV+DTR*HPd_visible))/100.0
 
             # round down if the decimal is between 0 and 0.95
             # round down if the decimal is 0.95
@@ -59,11 +60,13 @@ kill_probs = {}
 for d in damages:
     perm = list(d.keys())[0]
     ds = list(d.values())[0]
-    kp = sum(i >= 100 for i in ds) / 10.0 # /1000*100
+    kp = sum(i >= 100 for i in ds) / 1000.0 
 
     kill_probs[perm] = kp
 
-# print
-print("Kill Probabilites (%):")
-for k,v in kill_probs.items():
-    print(k, ': ', v, '%')
+# print (descending)
+sorted_kp = sorted(kill_probs.items(), key=lambda item: item[1], reverse=True)
+
+print("Kill Probability Per Permutation:")
+for k,v in sorted_kp:
+    print(k,': ', v)
